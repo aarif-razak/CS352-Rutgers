@@ -30,7 +30,7 @@ def server(listenPort):
 
     msg = csockid.recv(100)
     print(msg.decode())
-    result = [(x) for x, y, z in hosts if msg == x]
+    result = [(x) for x, y, z in hosts if (msg.decode()) == x]
     print(result)
     csockid.send(result[0].encode('utf-8'))
 

@@ -18,27 +18,26 @@ def client():
     localhost_addr = socket.gethostbyname(socket.gethostname())
 
     #Inputs
-    rsHostname, rsListenPort = sys.argv[1], sys.argv[2]
+    rsHostname, rsListenPort = sys.argv[1], int(sys.argv[2])
 
     # connect to the server on local machine
     server_binding = (rsHostname, rsListenPort)
     cs.connect(server_binding)
 
-    csockid, addr = cs.accept()
-
     file = open('PROJI-HNS.txt', 'r')
     outputFile = open("output.txt", "w")
     contents = file.read().splitlines()
     file.close()
+
     for hname in contents:
         #Connect to the new server, send a line        
         
         # send a intro message to the client.  
         msg = hname
-        csockid.send(msg.encode('utf-8'))
+        cs.send(msg.encode('utf-8'))
         #Get the response and write it to the output file
         # Receive data from the server
-        data_from_server=cs.recv(100)
+        data_from_server = cs.recv(100)
 
         #print("[C]: Data received from server: {}".format(data_from_server.decode('utf-8')))
         
@@ -48,5 +47,5 @@ def client():
     cs.close()
     exit()
 
-
+client()
    

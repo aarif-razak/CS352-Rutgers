@@ -1,6 +1,4 @@
 import threading
-import time
-import random
 import sys
 import socket
 
@@ -30,8 +28,11 @@ def server(listenPort):
     csockid, addr = ss.accept()
     print ("[S]: Got a connection request from a client at {}".format(addr))
 
-    msg = ss.recv(100)
-    print(msg)
+    msg = csockid.recv(100)
+    print(msg.decode())
+    result = [(x) for x, y, z in hosts if msg == x]
+    print(result)
+    csockid.send(result[0].encode('utf-8'))
 
     # Close the server socket
     ss.close()

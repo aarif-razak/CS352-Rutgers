@@ -18,7 +18,7 @@ def client():
     localhost_addr = socket.gethostbyname(socket.gethostname())
 
     #Inputs
-    rsHostname, rsListenPort = sys.argv[1], int(sys.argv[2])
+    rsHostname, rsListenPort, tsListenPort = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
 
     # connect to the server on local machine
     server_binding = (rsHostname, rsListenPort)
@@ -30,19 +30,33 @@ def client():
     file.close()
 
     for hname in contents:
-        #Connect to the new server, send a line        
-        
-        # send a intro message to the client.  
+        #Connect to the new server, send a line                
         msg = hname
         cs.send(msg.encode('utf-8'))
         #Get the response and write it to the output file
         # Receive data from the server
-        data_from_server = cs.recv(100)
+        data_from_server = cs.recv(100).decode('utf-8')
+        data = data_from_server.split(' ')
+        if(data[2] == 'A'):
+            outputFile.write("{}".format(data_from_server))
+        elif(data[2] == 'NS'):
+            #Connect to TS (new socket)
+            try:
+                tsSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                print("[C]: TSClient socket created")
+            except socket.error as err:
+                print('TSsocket open error: {} \n'.format(err))
+                exit()
+            tsConnect = (data, tsListenPort)
+            tsSocket.connect(tsConnect)
+            tsSocket.send(msg.encode('utf-8'))
 
-        #print("[C]: Data received from server: {}".format(data_from_server.decode('utf-8')))
-        
-        outputFile.write("{}".format(data_from_server.decode('utf-8')))
-    
+            data_from_server = tsSocket.recv(100)
+
+            outputFile.write("{}".format(data_from_server))
+
+            tsSocket.close()
+            
     #Close client socket
     cs.close()
     exit()

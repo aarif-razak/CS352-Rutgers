@@ -8,9 +8,12 @@ def server(listenPort):
     contents = file.read().splitlines()
     file.close()
     hosts = []
+    ns = ''
     for x in contents:
-        hosts.append(tuple(x.split(" ")))
-
+        line = x.split(' ')
+        hosts.append(tuple(line))
+        if line[-1] == 'NS':
+            ns = line[0] + ' ' + line[1] + ' ' + line[2]
     try:
         ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("[S]: Server socket created")
@@ -28,12 +31,21 @@ def server(listenPort):
     csockid, addr = ss.accept()
     print ("[S]: Got a connection request from a client at {}".format(addr))
 
-    msg = csockid.recv(100)
-    print(msg.decode())
-    result = [(x) for x, y, z in hosts if msg == x]
-    print(result)
-    csockid.send(result[0].encode('utf-8'))
-
+    while 1:
+        msg = csockid.recv(100).decode()
+        if not msg:
+            print("No more messages received. Closing connection with {}".format(addr))
+            break
+        print("Received message: {}".format(msg))
+        result = [(x, y, z) for x, y, z in hosts if msg.lower() == x.lower()]
+        response = ''
+        if len(result) > 0:
+            response = "{} {} {}".format(result[0][0], result[0][1], result[0][2])
+            csockid.send(response.encode('utf-8'))
+        else:
+            response = ns
+            csockid.send(response.encode('utf-8'))
+        print("Sent message: {}".format(response))
     # Close the server socket
     ss.close()
     exit()

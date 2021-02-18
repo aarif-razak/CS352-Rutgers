@@ -1,0 +1,27 @@
+CS352 Project 1
+----------------------------------------------------
+Jonathan Tai jt896
+Aarif Razak ahr58
+----------------------------------------------------
+1. Briefly discuss how you implemented your recursive client functionality.
+The client first establishes a connection with the rs server, then reads in
+from the input file line by line. For each line, if it is requesting an 'A'
+record, then the client will query from the rs server. If the rs server
+responds with a name server, then the client will request from that server.
+The responses are written to the output file after each line.
+
+2. Are there known issues or functions that aren't working currently in your
+   attached code? If so, explain.
+As far as we can tell there are no issues.
+
+3. What problems did you face developing code for this project?
+We first wrote the programs as if they would all be running on the same machine,
+i.e. a client/servers from localhost. One problem we came across was how to get
+the programs to work on separate machines. Another thing we had to figure out was
+how to store and format the information given in the input file. We chose to use
+a 3-tuple to match the format of the input, e.g ('mx.rutgers.edu', '192.64.4.2', 'A').
+
+4. Reflect on what you learned by working on this project.
+We learned the basics of python networking which will definitely help us in future
+projects. We also learned some basic python I/O functions as well as how tuples
+work in python.

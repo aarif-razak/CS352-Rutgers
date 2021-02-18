@@ -24,7 +24,7 @@ def client():
     cs.connect(server_binding)
 
     file = open('PROJI-HNS.txt', 'r')
-    outputFile = open("output.txt", "w")
+    outputFile = open("RESOLVED.txt", "w")
     contents = file.read().splitlines()
     file.close()
 

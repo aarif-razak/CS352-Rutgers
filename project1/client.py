@@ -15,7 +15,7 @@ def client():
 
     #Inputs
     rsHostname, rsListenPort, tsListenPort = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
-    rs_ip = socket.gethostbyname(socket.gethostname())
+    rs_ip = socket.gethostbyname(rsHostname)
     tsSocket = None
     ts_ip = None
 
@@ -45,7 +45,7 @@ def client():
                 # Connect to TS (new socket)
                 if tsSocket is None:
                     tsSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    ts_ip = socket.gethostbyname(socket.gethostname())
+                    ts_ip = socket.gethostbyname(data[0])
                     tsConnect = (ts_ip, tsListenPort)
                     tsSocket.connect(tsConnect)
                     print("[C]: TSClient socket created")

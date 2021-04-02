@@ -59,7 +59,7 @@ def server(listen_port, ts1_host, ts1_port, ts2_host, ts2_port):
         if not msg:
             print("No more messages received. Closing connection with {}".format(addr))
             break
-        print("Received message: {}".format(msg))
+        print("Received message from cleint: {}".format(msg))
 
         ts1s.send(msg.encode('utf-8'))
         ts2s.send(msg.encode('utf-8'))
@@ -69,16 +69,18 @@ def server(listen_port, ts1_host, ts1_port, ts2_host, ts2_port):
 
         readable, writable, errors = select.select(sockets, [], [], 5)
 
-        for s in readable:
-            ts_msg = s.recv(100).decode('utf-8')
-            print("Received message: {}".format(ts_msg))
-            csockid.send(ts_msg.encode('utf-8'))
-            print("Sent message: {}".format(ts_msg))
-
         if not readable:
             error_msg = "{} - Error:HOST NOT FOUND".format(msg)
             csockid.send(error_msg.encode('utf-8'))
-            print("Sent message: {}".format(error_msg))
+            print("Sent message to client: {}".format(error_msg))
+        else:
+            for s in readable:
+                ts_msg = s.recv(100).decode('utf-8')
+                print("Received message from ts: {}".format(ts_msg))
+                csockid.send(ts_msg.encode('utf-8'))
+                print("Sent message to client: {}".format(ts_msg))
+
+
 
 
 

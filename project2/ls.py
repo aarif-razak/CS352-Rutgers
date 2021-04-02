@@ -11,6 +11,7 @@ def server(listen_port, ts1_host, ts1_port, ts2_host, ts2_port):
         print('socket open error: {}\n'.format(err))
         exit()
 
+
     server_binding = ('', listen_port)
     ss.bind(server_binding)
     ss.listen(1)
@@ -24,6 +25,34 @@ def server(listen_port, ts1_host, ts1_port, ts2_host, ts2_port):
 
 
     # open connection to ts1 and ts2 servers
+    try:
+        ts1s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print("[TS1]: TS1 socket created")
+    except socket.error as err:
+        print('socket open error: {} \n'.format(err))
+        exit()
+
+    # Inputs
+    ts1_ip = socket.gethostbyname(ts1_host)
+
+    # connect to the server on local machine
+    ts1server_binding = (ts1_ip, ts1_port)
+    ts1s.connect(ts1server_binding)
+    
+    try:
+        ts2s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print("[TS2]: Ts2 socket created")
+    except socket.error as err:
+        print('socket open error: {} \n'.format(err))
+        exit()
+
+    # Inputs
+    ts2_ip = socket.gethostbyname(ts1_host)
+
+    # connect to the server on local machine
+    ts2server_binding = (ts2_ip, ts2_port)
+    ts2s.connect(ts2server_binding)
+
 
     while 1:
         msg = csockid.recv(100).decode()

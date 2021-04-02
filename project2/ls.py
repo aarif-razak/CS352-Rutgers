@@ -1,3 +1,4 @@
+import select
 import threading
 import sys
 import socket
@@ -53,7 +54,6 @@ def server(listen_port, ts1_host, ts1_port, ts2_host, ts2_port):
     ts2server_binding = (ts2_ip, ts2_port)
     ts2s.connect(ts2server_binding)
 
-
     while 1:
         msg = csockid.recv(100).decode()
         if not msg:
@@ -61,17 +61,31 @@ def server(listen_port, ts1_host, ts1_port, ts2_host, ts2_port):
             break
         print("Received message: {}".format(msg))
 
-        csockid.send(msg.encode('utf-8'))
+        ts1s.send(msg.encode('utf-8'))
+        ts2s.send(msg.encode('utf-8'))
+        print("Sent message to ts servers: {}".format(msg))
 
-        # forward msg to ts1 and ts2
-        # nonblocking recv?
-        # wait for response, send result to client
+        sockets = [ts1s, ts2s]
 
-        # response = "{} {} {}".format(result[0][0], result[0][1], result[0][2])
-        # csockid.send(response.encode('utf-8'))
-        # print("Sent message: {}".format(response))
+        readable, writable, errors = select.select(sockets, [], [], 5)
+
+        for s in readable:
+            ts_msg = s.recv(100).decode('utf-8')
+            print("Received message: {}".format(ts_msg))
+            csockid.send(ts_msg.encode('utf-8'))
+            print("Sent message: {}".format(ts_msg))
+
+        if not readable:
+            error_msg = "{} - Error:HOST NOT FOUND".format(msg)
+            csockid.send(error_msg.encode('utf-8'))
+            print("Sent message: {}".format(error_msg))
+
+
+
     # Close the server socket
     ss.close()
+    ts1s.close()
+    ts2s.close()
     exit()
 
 
